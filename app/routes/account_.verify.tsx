@@ -23,8 +23,10 @@ export default function VerifyRoute() {
   }, [status, navigate]);
 
   return (
-    <p style={{ color: "var(--nv-muted)" }}>
-      {status === "error" ? t("account.verifyError") : t("account.verifying")}
-    </p>
+    <div className="section-prose flex min-h-[40vh] items-center justify-center py-8">
+      <p className="text-sm text-fg-3">
+        {status === "error" ? t("account.verifyError") : t("account.verifying")}
+      </p>
+    </div>
   );
 }

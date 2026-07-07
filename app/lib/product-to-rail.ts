@@ -3,8 +3,8 @@ import type { RailProduct } from "~/components/sections/product-rail";
 
 /**
  * Adapt a kit `Product` (server projection, money in minor units) into the flat
- * `RailProduct` shape the Bodybe `ProductRail`/`VerticalCard` expect. This is
- * the demo↔real seam: the card markup never changes, only its data source.
+ * `RailProduct` shape `ProductRail`/`VerticalCard` expect — the only seam
+ * between SDK data and section markup.
  */
 export function productToRailItem(p: Product, locale = "cs-CZ"): RailProduct {
   const variant = p.variants[0];

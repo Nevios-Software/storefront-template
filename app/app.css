@@ -2,22 +2,30 @@
 @import "tw-animate-css";
 
 /* =============================================================================
-   BODYBE TOKENS — single source of truth
+   NEVIOS STOREFRONT TOKENS — single source of truth
    Hand-pick a color/radius/duration in a component and the design system breaks.
+
+   THIS IS THE REBRAND LEVER. To reskin a store, change values here — never
+   restyle individual components with hex/inline styles. The raw scale below
+   (--tint-100…--ink-800) keeps its original variable names for backwards
+   compatibility with existing Tailwind utility classes (bg-coral, bg-peach,
+   etc.) that predate this neutral default; new code should reach for the
+   SEMANTIC aliases (--brand, --brand-hover, --brand-soft, --brand-accent).
    ============================================================================= */
 
 :root {
   /* ---------------------------------------------------------------------------
-     BRAND COLOR SCALE
-     Six anchor colors from the Bodybe manual. Numbered to leave room for
-     tints/shades if we ever need them, but ramps stay shallow on purpose —
-     less surface area = less drift.
+     BRAND COLOR SCALE — neutral default (a store rebrands by overriding this
+     ramp, and/or nevios.config.ts `theme`, which feeds the kit's own checkout/
+     account/order surfaces — keep the two visually in sync when rebranding).
+     Var names kept from the original scale for Tailwind utility compatibility
+     (bg-coral == bg-brand, bg-peach == bg-brand-soft, etc.) — see aliasing below.
      --------------------------------------------------------------------------- */
-  --skin-100: #efcfba;
-  --peach-200: #febe98;
-  --sunrise-300: #fb9370;
-  --coral-400: #e2564f;
-  --brown-800: #403b35;
+  --skin-100: #f2f1ee; /* lightest tint */
+  --peach-200: #e8e6e1; /* soft secondary surface */
+  --sunrise-300: #8f8b83; /* mid neutral — gradients, illustrative bg */
+  --coral-400: #18181b; /* primary CTA / brand mark — near-black default */
+  --brown-800: #201d1a; /* darkest — footer, dark feature cards */
   --white: #ffffff;
 
   /* ---------------------------------------------------------------------------
@@ -25,7 +33,7 @@
      Use these in components — never reach for the raw scale.
      --------------------------------------------------------------------------- */
   --brand: var(--coral-400); /* primary CTA, brand marks */
-  --brand-hover: #d34a44; /* coral -8% lightness, hand-tuned */
+  --brand-hover: #000000; /* brand -8% lightness equivalent for near-black */
   --brand-soft: var(--peach-200); /* secondary CTA, hover backgrounds */
   --brand-accent: var(--sunrise-300); /* highlights, illustrative bg */
 
@@ -44,36 +52,36 @@
 
      The framed ProductCard convention:
        outer frame = bg-paper-cream-soft, inner image well = bg-paper-cream.
-       Don't break this — DesignCard relies on the visual hierarchy.
+       Don't break this — the product card relies on the visual hierarchy.
      --------------------------------------------------------------------------- */
   --page: #ffffff; /* pure white — primary page background */
   --card: var(--white); /* raised content card (semantically not "white" — it's the card surface) */
-  --paper-cream: #f8f1ea; /* warm cream — section tints, image well inside framed product card */
-  --paper-cream-soft: #fcf7f0; /* near-white cream — outer frame of framed product card, soft section bg */
-  --paper-peach: #fff3e7; /* peachy section tint — softer than peach-200, good for cross-sell rails */
-  --paper-rose: #fde9e3; /* warm rose tint — sale chips, gentle promo bg */
-  --paper-dark: var(--brown-800); /* footer, dark feature cards — warm brown soil, NOT bg-fg-1 */
+  --paper-cream: #f6f5f3; /* neutral tint — section tints, image well inside framed product card */
+  --paper-cream-soft: #fbfaf9; /* near-white neutral — outer frame of framed product card, soft section bg */
+  --paper-peach: #f2f1ee; /* soft section tint — cross-sell rails, secondary blocks */
+  --paper-rose: #f2eeec; /* muted warm tint — sale chips, gentle promo bg */
+  --paper-dark: var(--brown-800); /* footer, dark feature cards — NOT bg-fg-1 */
 
   /* ---------------------------------------------------------------------------
-     FOREGROUNDS — derived from brown soil for warmth.
+     FOREGROUNDS — warm-neutral charcoal scale.
      --------------------------------------------------------------------------- */
-  --fg-1: #2a2622; /* primary text, headings */
-  --fg-2: #4d463e; /* body */
-  --fg-3: #807469; /* muted text, captions */
-  --fg-4: #b3a89c; /* placeholder, dividers */
-  --fg-on-dark: #faf5ec; /* text on --paper-dark */
-  --fg-on-dark-muted: #b9b0a4;
+  --fg-1: #1f1e1c; /* primary text, headings */
+  --fg-2: #47443f; /* body */
+  --fg-3: #7a766f; /* muted text, captions */
+  --fg-4: #aca79f; /* placeholder, dividers */
+  --fg-on-dark: #f7f6f4; /* text on --paper-dark */
+  --fg-on-dark-muted: #b3afa8;
 
   /* ---------------------------------------------------------------------------
      HAIRLINES — use ring-* or inset box-shadow, never tailwind border-* utility.
      --------------------------------------------------------------------------- */
-  --hairline-soft: rgba(64, 59, 53, 0.06);
-  --hairline: rgba(64, 59, 53, 0.1);
-  --hairline-strong: rgba(64, 59, 53, 0.16);
+  --hairline-soft: rgba(40, 38, 35, 0.06);
+  --hairline: rgba(40, 38, 35, 0.1);
+  --hairline-strong: rgba(40, 38, 35, 0.16);
   --hairline-on-dark: rgba(255, 255, 255, 0.1);
 
   /* ---------------------------------------------------------------------------
-     STATE COLORS (from manual, used in toasts, badges, form validation)
+     STATE COLORS — universal UI semantics (toasts, badges, form validation).
      The `-fg` variants are darkened tones for text — the base brights are too
      light for legible text on light surfaces (warning amber on white = AA fail).
      --------------------------------------------------------------------------- */
@@ -96,12 +104,14 @@
   --cyan: #00ccfa;
 
   /* ---------------------------------------------------------------------------
-     GRADIENTS — the four canonical ones from the manual.
+     GRADIENTS — the four canonical ones. In the neutral default these are
+     close-luminance ramps (dark→dark, light→light): a wide dark→mid ramp
+     reads muddy, so when rebranding keep both stops in the same value range.
      --------------------------------------------------------------------------- */
-  --grad-sunset: linear-gradient(135deg, var(--coral-400) 0%, var(--sunrise-300) 100%);
-  --grad-soil: linear-gradient(135deg, var(--brown-800) 0%, var(--coral-400) 100%);
-  --grad-cream: linear-gradient(135deg, var(--white) 0%, var(--peach-200) 100%);
-  --grad-peach: linear-gradient(135deg, var(--sunrise-300) 0%, var(--peach-200) 100%);
+  --grad-sunset: linear-gradient(150deg, #34312d 0%, #191715 55%, #121110 100%);
+  --grad-soil: linear-gradient(150deg, #1c1a18 0%, #2e2b27 100%);
+  --grad-cream: linear-gradient(135deg, var(--white) 0%, var(--paper-peach) 100%);
+  --grad-peach: linear-gradient(135deg, var(--paper-peach) 0%, var(--peach-200) 100%);
 
   /* ---------------------------------------------------------------------------
      TYPOGRAPHY — Satoshi for body, Pilcrow Rounded for display moments.
@@ -112,9 +122,8 @@
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
   /* ---------------------------------------------------------------------------
-     RADII — soft & organic, matching the brand's "měkce zaoblený" language.
-     Default card is lg (16). CTAs are pill. Don't override h-* / rounded-* on
-     buttons or inputs — use variants.
+     RADII — soft, approachable defaults. Default card is lg (16). CTAs are
+     pill. Don't override h-* / rounded-* on buttons or inputs — use variants.
      --------------------------------------------------------------------------- */
   --r-xs: 4px;
   --r-sm: 8px;
@@ -494,14 +503,15 @@
     0 2px 6px -1px rgba(64, 59, 53, 0.06);
 }
 
-/* Glow on coral CTAs on hover */
+/* Glow on brand CTAs on hover (class kept as .glow-coral for back-compat with
+   ported components; the color itself now tracks --brand, not literal coral). */
 .glow-coral {
   transition:
     box-shadow 220ms ease,
     transform 120ms ease;
 }
 .glow-coral:hover {
-  box-shadow: 0 8px 24px -6px rgba(226, 86, 79, 0.45);
+  box-shadow: 0 8px 24px -6px color-mix(in oklch, var(--brand) 45%, transparent);
 }
 
 /* Smooth content fade — for variant swaps, route transitions */
@@ -556,9 +566,13 @@
   animation: pulse-soft 2.4s ease-in-out infinite;
 }
 
-/* Coral underline — emphasis text */
+/* Brand underline — emphasis text (class kept as .coral-underline for back-compat) */
 .coral-underline {
-  background-image: linear-gradient(180deg, transparent 60%, rgba(226, 86, 79, 0.25) 60%);
+  background-image: linear-gradient(
+    180deg,
+    transparent 60%,
+    color-mix(in oklch, var(--brand) 25%, transparent) 60%
+  );
 }
 
 /* Tabular figures — combines with .num */
@@ -573,7 +587,7 @@
   overflow: hidden;
 }
 
-/* Skeleton shimmer (alternative — coral subtle) */
+/* Skeleton shimmer (alternative — subtle brand tint) */
 @keyframes shimmer-coral {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -582,7 +596,7 @@
   background: linear-gradient(
     90deg,
     var(--paper-cream-soft) 0%,
-    rgba(254, 190, 152, 0.3) 50%,
+    var(--paper-peach) 50%,
     var(--paper-cream-soft) 100%
   );
   background-size: 200% 100%;

@@ -39,8 +39,8 @@ const ctaToneClass: Record<NonNullable<HeroSlide["tone"]>, string> = {
 
 /**
  * Hero carousel — full-width gradient slides with display title, description,
- * white pill CTA, and arrow nav. Uses CSS scroll-snap (no library). Ported
- * verbatim from the Bodybe Next store; only the framework seams changed.
+ * white pill CTA, and arrow nav. Uses CSS scroll-snap (no library, no copy
+ * baked in — every slide's text/tone/CTA is a prop).
  */
 export function HeroCarousel({ slides, className, autoAdvanceMs = 7000 }: HeroCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);

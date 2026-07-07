@@ -1,4 +1,4 @@
-import { Droplet, Scissors, Sparkles, Sun } from "lucide-react";
+import { Gift, Headset, RotateCcw, ShieldCheck, Sparkles, Tag, TrendingUp, Truck } from "lucide-react";
 import { type Product } from "@nevios/storefront-js";
 
 import type { Route } from "./+types/_index";
@@ -7,6 +7,11 @@ import { productToRailItem } from "../lib/product-to-rail";
 import { HeroCarousel } from "../components/sections/hero-carousel";
 import { ProductRail } from "../components/sections/product-rail";
 import { CategoryPills } from "../components/sections/category-pills";
+import { UspBar } from "../components/sections/usp-bar";
+import { Testimonials } from "../components/sections/testimonials";
+import { MediaText } from "../components/sections/media-text";
+import { Newsletter } from "../components/sections/newsletter";
+import { Faq } from "../components/sections/faq";
 import { shop } from "../../nevios.config";
 
 export function meta({ data }: Route.MetaArgs) {
@@ -34,10 +39,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 /**
- * BODYBE homepage — section order mirrors the Bodybe Next store:
- *   1. Hero carousel (edge-to-edge, 3 gradient slides)
- *   2. Bestsellers rail (real catalog via productToRailItem)
- *   3. Category pills
+ * Home — a flat list of sections. Add a section: build it under
+ * components/sections/, register it in /design, drop it in below.
+ * Reorder / remove: just move or delete a block. No section here reads
+ * or writes anything beyond its own props — see CLAUDE.md "Common tasks".
  */
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { products, locale } = loaderData;
@@ -49,33 +54,32 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <HeroCarousel
           slides={[
             {
-              eyebrow: "Anti-aging",
+              eyebrow: "Nová kolekce",
               title: (
                 <>
-                  Vrásky
+                  Vaše nová
                   <br />
-                  mluví za tebe?
+                  oblíbená věc.
                 </>
               ),
               description:
-                "Zkus PDRN sérum s polynukleotidy — regenerace, kterou znají estetické kliniky, teď v denní rutině.",
-              ctaLabel: "Vyzkoušet PDRN",
-              ctaHref: "/products/pdrn-serum",
+                "Čerstvý výběr, který stojí za pozornost — podívejte se, než se rozprodá.",
+              ctaLabel: "Prozkoumat kolekci",
+              ctaHref: "/collections",
               tone: "coral",
             },
             {
-              eyebrow: "Smart beauty",
+              eyebrow: "Kvalita",
               title: (
                 <>
-                  Krása
+                  Vyrobeno tak,
                   <br />
-                  začíná zevnitř.
+                  aby to vydrželo.
                 </>
               ),
-              description:
-                "Chytrá kosmetika a doplňky stravy formulované pro ženy, které vědí, co chtějí.",
-              ctaLabel: "Prozkoumat e-shop",
-              ctaHref: "/collections",
+              description: "Pečlivě vybraní dodavatelé, materiály, na kterých záleží.",
+              ctaLabel: "Náš příběh",
+              ctaHref: "/o-nas",
               tone: "soil",
             },
             {
@@ -87,8 +91,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                   v nabídce.
                 </>
               ),
-              description:
-                "Naše nejnovější přírůstky — vyzkoušej je první, než se rozkřiknou.",
+              description: "Naše nejnovější přírůstky — vyzkoušejte je jako první.",
               ctaLabel: "Zobrazit novinky",
               ctaHref: "/collections",
               tone: "coral",
@@ -102,7 +105,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <ProductRail
           eyebrow="Nejprodávanější"
           title="Bestsellery"
-          description="Produkty, které milují tisíce žen po celé ČR."
+          description="Produkty, které si zákazníci vybírají nejčastěji."
           products={products.map((p) => productToRailItem(p, locale))}
           viewAllHref="/collections"
           layout="scroll"
@@ -115,10 +118,94 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <CategoryPills
           size="lg"
           pills={[
-            { href: "/collections", label: "Opalování", icon: Sun },
-            { href: "/collections", label: "Tělo & Glow", icon: Sparkles },
-            { href: "/collections", label: "Anti-aging", icon: Droplet },
-            { href: "/collections", label: "Vlasy", icon: Scissors },
+            { href: "/collections", label: "Novinky", icon: Sparkles },
+            { href: "/collections", label: "Bestsellery", icon: TrendingUp },
+            { href: "/collections", label: "Výprodej", icon: Tag },
+            { href: "/collections", label: "Dárky", icon: Gift },
+          ]}
+        />
+      </section>
+
+      {/* 4 — TRUST / USP STRIP */}
+      <section className="section-wide">
+        <UspBar
+          items={[
+            { icon: Truck, label: "Doprava zdarma", description: "Při objednávce nad 999 Kč" },
+            { icon: RotateCcw, label: "30 dní na vrácení", description: "Bez udání důvodu" },
+            { icon: ShieldCheck, label: "Bezpečná platba", description: "Karta, převod, na dobírku" },
+            { icon: Headset, label: "Zákaznická podpora", description: "Jsme tu pro vás 7 dní v týdnu" },
+          ]}
+        />
+      </section>
+
+      {/* 5 — BRAND STORY SPOTLIGHT */}
+      <section className="section-wide">
+        <MediaText
+          eyebrow="Náš příběh"
+          title="Vyrobeno s péčí, doručeno rychle."
+          description="Od výběru materiálů po zabalení poslední objednávky — na každém kroku nám záleží na tom, aby k vám dorazilo přesně to, co jste si objednali."
+          ctaLabel="Více o nás"
+          ctaHref="/o-nas"
+          tone="cream"
+        />
+      </section>
+
+      {/* 6 — TESTIMONIALS */}
+      <section className="section-wide">
+        <Testimonials
+          eyebrow="Recenze"
+          title="Co říkají zákazníci"
+          testimonials={[
+            {
+              name: "Jana K.",
+              quote: "Objednávka dorazila druhý den a balení bylo perfektní. Určite budu objednávat znovu.",
+              rating: 5,
+            },
+            {
+              name: "Tomáš V.",
+              quote: "Kvalita přesně podle popisu, komunikace s podporou bezproblémová.",
+              rating: 5,
+            },
+            {
+              name: "Petra S.",
+              quote: "Vrácení proběhlo hladce, žádné zbytečné papírování. Doporučuji.",
+              rating: 4,
+            },
+          ]}
+        />
+      </section>
+
+      {/* 7 — NEWSLETTER */}
+      <section className="section-wide">
+        <Newsletter
+          eyebrow="Buďte v obraze"
+          title="Novinky a slevy přímo do e-mailu"
+          description="Žádný spam — jen nové produkty a příležitostné akce."
+        />
+      </section>
+
+      {/* 8 — FAQ */}
+      <section className="section-wide">
+        <Faq
+          eyebrow="Časté dotazy"
+          title="Než objednáte"
+          items={[
+            {
+              question: "Jak dlouho trvá doručení?",
+              answer: "Standardní doručení trvá 1–3 pracovní dny od odeslání objednávky.",
+            },
+            {
+              question: "Můžu zboží vrátit?",
+              answer: "Ano, do 30 dnů od doručení bez udání důvodu — viz stránka Doprava a platba.",
+            },
+            {
+              question: "Jaké způsoby platby přijímáte?",
+              answer: "Platební kartou, bankovním převodem a na dobírku.",
+            },
+            {
+              question: "Jak zjistím stav své objednávky?",
+              answer: "Odkaz na sledování objednávky dostanete e-mailem ihned po odeslání.",
+            },
           ]}
         />
       </section>

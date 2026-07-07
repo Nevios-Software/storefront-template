@@ -109,7 +109,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Bodybe brand fonts — Satoshi + Pilcrow Rounded (Fontshare) */}
+        {/* Default storefront fonts — Satoshi + Pilcrow Rounded (Fontshare). Swap
+            the family names here + in app.css --font-satoshi/--font-pilcrow to rebrand. */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="anonymous" />
         <link

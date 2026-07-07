@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Heart, Plus, ShoppingBag, Star, type LucideIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+import { MediaImage } from "~/components/shared/media-image";
 
 // ===========================================================================
 // TYPES
@@ -189,10 +190,11 @@ export function VerticalCard({
           )}
           style={imageStyle}
         >
-          <img
+          <MediaImage
             src={image}
             alt={imageAlt || name}
-            loading="lazy"
+            widths={[320, 640]}
+            sizes="(min-width: 640px) 280px, 45vw"
             className="absolute inset-0 h-full w-full object-contain p-6"
           />
           {badge && <BadgeChip badge={badge} className="left-4 top-4" />}
@@ -213,10 +215,11 @@ export function VerticalCard({
             )}
             style={imageStyle}
           >
-            <img
+            <MediaImage
               src={image}
               alt={imageAlt || name}
-              loading="lazy"
+              widths={[320, 640]}
+              sizes="(min-width: 640px) 280px, 45vw"
               className="absolute inset-0 h-full w-full object-contain p-3"
             />
             {badge && <BadgeChip badge={badge} className="left-3 top-3" />}

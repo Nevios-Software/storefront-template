@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { OrderConfirmation } from "@nevios/storefront-kit";
+import { OrderStatusPage } from "@nevios/storefront-kit";
 import { StorefrontError } from "@nevios/storefront-js";
 
 import type { Route } from "./+types/order.$token";
@@ -26,7 +26,13 @@ export async function loader({ request, context, params }: Route.LoaderArgs) {
   }
 }
 
+// Full status page (timeline + items + shipping + tracking) — the kit's; this
+// route owns only the page shell.
 export default function OrderRoute({ loaderData }: Route.ComponentProps) {
   const { locale } = useMarketData();
-  return <OrderConfirmation order={loaderData.order} locale={locale} />;
+  return (
+    <div className="section-prose py-8 lg:py-12">
+      <OrderStatusPage order={loaderData.order} locale={locale} />
+    </div>
+  );
 }

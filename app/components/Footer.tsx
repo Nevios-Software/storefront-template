@@ -11,22 +11,25 @@ export function Footer() {
             {shop.name}
           </span>
           <p className="mt-3 text-sm leading-relaxed text-fg-on-dark-muted">
-            Chytrá kosmetika a doplňky. Vyrobené s péčí, doručené rychle.
+            Vyrobeno s péčí, doručeno rychle.
           </p>
         </div>
 
-        <nav className="flex flex-col gap-2.5">
-          <p className="mb-1 text-xs font-medium tracking-wide text-fg-on-dark-muted uppercase">Obchod</p>
-          {shop.nav.map((item) => (
-            <Link
-              key={item.handle}
-              to={`/collections/${item.handle}`}
-              className="text-sm text-fg-on-dark/85 transition-colors duration-base hover:text-white"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Shop column renders only when nav items exist — an empty heading looks broken. */}
+        {shop.nav.length > 0 && (
+          <nav className="flex flex-col gap-2.5">
+            <p className="mb-1 text-xs font-medium tracking-wide text-fg-on-dark-muted uppercase">Obchod</p>
+            {shop.nav.map((item) => (
+              <Link
+                key={item.handle}
+                to={`/collections/${item.handle}`}
+                className="text-sm text-fg-on-dark/85 transition-colors duration-base hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         <nav className="flex flex-col gap-2.5">
           <p className="mb-1 text-xs font-medium tracking-wide text-fg-on-dark-muted uppercase">Informace</p>

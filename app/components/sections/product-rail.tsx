@@ -86,7 +86,7 @@ interface ProductRailProps {
 
 /**
  * Titled product carousel — `grid` (responsive) or `scroll` (horizontal rail).
- * Ported verbatim from the Bodybe Next store; only framework seams changed.
+ * Section mechanic — token-driven, no hardcoded copy.
  */
 export function ProductRail({
   eyebrow,
@@ -122,7 +122,7 @@ export function ProductRail({
           {products.map((p) => (
             <VerticalCard key={p.name + p.href} {...railToVerticalProps(p)} />
           ))}
-          {endLink && <EndCard {...endLink} variant="grid" />}
+          {endLink && <EndCard {...endLink} />}
         </div>
       ) : (
         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -137,8 +137,8 @@ export function ProductRail({
               </div>
             ))}
             {endLink && (
-              <div className="w-[260px] shrink-0 snap-start sm:w-[280px]">
-                <EndCard {...endLink} variant="scroll" />
+              <div className="w-[260px] shrink-0 snap-start self-stretch sm:w-[280px]">
+                <EndCard {...endLink} />
               </div>
             )}
           </div>
@@ -148,16 +148,10 @@ export function ProductRail({
   );
 }
 
-/** Closing CTA card slotted at the end of a rail. */
-function EndCard({
-  href,
-  label,
-  variant,
-}: {
-  href: string;
-  label: string;
-  variant: "grid" | "scroll";
-}) {
+/** Closing CTA card slotted at the end of a rail. Fills its cell's height —
+ *  scroll rows stretch it to the tallest card (self-stretch on the wrapper),
+ *  so no fixed min-height that would pad the row with dead whitespace. */
+function EndCard({ href, label }: { href: string; label: string }) {
   return (
     <Link
       to={href}
@@ -165,7 +159,6 @@ function EndCard({
         "group flex h-full flex-col items-center justify-center gap-5 rounded-2xl",
         "bg-paper-peach hover:bg-paper-rose lift-hover",
         "p-8 text-center transition-colors",
-        variant === "scroll" && "min-h-[460px]",
       )}
     >
       <span
@@ -177,7 +170,6 @@ function EndCard({
       <span className="text-fg-1 max-w-[200px] text-base font-semibold leading-snug">
         {label}
       </span>
-      <span className="text-fg-3 text-xs">Prohlédnout celou kolekci →</span>
     </Link>
   );
 }

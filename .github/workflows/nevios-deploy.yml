@@ -14,6 +14,12 @@ name: Deploy to Nevios
 on:
   push:
     branches: [main]
+  # Nevios fires this (repository_dispatch) after a push made via the GitHub App
+  # token — e.g. an edit from the Nevios mobile app — which GitHub refuses to let
+  # trigger `on: push`. This keeps auto-deploy unconditional: every push deploys,
+  # no matter how the commit was made. Do not remove.
+  repository_dispatch:
+    types: [nevios-deploy]
   workflow_dispatch: {}
 
 # One deploy at a time per branch; a newer push cancels an in-flight one.
@@ -33,6 +39,8 @@ jobs:
         with:
           node-version: 20
 
+      # No committed lockfile in the template → resolve fresh (and no setup-node
+      # pnpm cache, which requires a lockfile to key on).
       - run: pnpm install --no-frozen-lockfile
 
       # Build the React Router app → build/server (isolate) + build/client (assets).
@@ -47,3 +55,15 @@ jobs:
           NEVIOS_STORE: ${{ vars.NEVIOS_STORE }}
           NEVIOS_TRIGGERED_BY: github-action
         run: npx @nevios/cli push --dir ./build/server
+
+      # Registers the store's pages in the Nevios route registry (sitemap/SEO),
+      # driven by nevios.routes.json — same deploy-token credential as push.
+      # A failed sync must NOT roll back the deploy, hence continue-on-error.
+      - name: Sync routes to Nevios
+        continue-on-error: true
+        env:
+          NEVIOS_PAT: ${{ secrets.NEVIOS_PAT }}
+          NEVIOS_API_URL: ${{ vars.NEVIOS_API_URL }}
+          NEVIOS_ACCOUNT: ${{ vars.NEVIOS_ACCOUNT }}
+          NEVIOS_STORE: ${{ vars.NEVIOS_STORE }}
+        run: npx @nevios/cli routes sync

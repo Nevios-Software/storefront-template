@@ -1,0 +1,13 @@
+{
+  "$comment": "This manifest drives `nevios routes sync` (runs in the deploy workflow): the store's static pages get registered into the Nevios route registry, which powers the sitemap, SEO metadata, and the dashboard's page list. When you add a new content page under app/routes/ it syncs automatically — you only need to add an entry under `routes` if you want a nicer title or SEO metadata for it.",
+  "app": "./app",
+  "source": "storefront",
+  "patterns": { "product": "/products/{handle}", "collection": "/collections/{handle}" },
+  "exclude": ["/checkout", "/account", "/cart", "/search", "/design", "/order", "/sitemap.xml", "/robots.txt"],
+  "routes": {
+    "/o-nas": { "title": "O nás" },
+    "/doprava": { "title": "Doprava a platba" },
+    "/kontakt": { "title": "Kontakt" },
+    "/obchodni-podminky": { "title": "Obchodní podmínky" }
+  }
+}

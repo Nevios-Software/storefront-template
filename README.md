@@ -1,23 +1,31 @@
 # Your Nevios store
 
-This is your online store's frontend — a React (React Router 7) app that Nevios
-hosts on Cloudflare. You edit it by chatting with Claude; every push to `main`
-builds and deploys automatically.
+This is your online store's frontend — a React (React Router 7) app that
+Nevios hosts on Cloudflare. Products, prices, and orders live in your Nevios
+dashboard; this repo is only the design and layout. The easiest way to change
+it: open the repo in Claude (desktop or mobile) and say what you want.
 
-## Editing
+## Quickstart (local)
 
-- **With Claude** — open this repo in Claude (desktop or the mobile app) and say
-  what you want to change. Claude knows this store: see [`CLAUDE.md`](./CLAUDE.md).
-- **Locally** — `pnpm install` then `pnpm dev`.
+```sh
+pnpm install
+cp .env.example .dev.vars   # then fill in your publishable key
+pnpm dev                    # → http://localhost:3030
+```
 
-## Deploying
+Visit `/design` in dev — the live catalog of every section, product component,
+and primitive this store is built from.
 
-Push to `main`. GitHub Actions ([`.github/workflows/nevios-deploy.yml`](./.github/workflows/nevios-deploy.yml))
-builds the app and runs `nevios push`, which ships it to Nevios hosting. A build
-failure never touches your live store.
+## How deploys work
 
-Required repo settings (Settings → Secrets and variables → Actions), set for you
-when Nevios creates this repo — or add them yourself:
+Push to `main`. GitHub Actions
+([`.github/workflows/nevios-deploy.yml`](./.github/workflows/nevios-deploy.yml))
+builds the app, ships it with `nevios push`, and syncs your pages into the
+Nevios route registry (`nevios routes sync`). A failed build never touches the
+live store.
+
+Required repo settings (Settings → Secrets and variables → Actions) — set for
+you when Nevios creates the repo:
 
 | Kind | Name | Value |
 |---|---|---|
@@ -26,13 +34,19 @@ when Nevios creates this repo — or add them yourself:
 | Variable | `NEVIOS_ACCOUNT` | your account handle |
 | Variable | `NEVIOS_STORE` | your store handle |
 
-## What's data vs. code
+## Editing with AI
 
-- **Content** (products, prices, images, collections) lives in your **Nevios
-  dashboard** and arrives at runtime — never hardcode it here.
-- **Code** (layout, sections, design) lives in this repo — that's what you edit.
+[`CLAUDE.md`](./CLAUDE.md) is the full edit-guide — the map of the codebase,
+recipes for common changes (hero copy, new sections, rebrand, content pages),
+and the hard rules. Claude reads it automatically; humans are welcome too.
+
+## What's content vs. code
+
+- **Content** (products, prices, images, collections, stock) → your **Nevios
+  dashboard**. It arrives at runtime — it is never hardcoded here.
+- **Code** (layout, sections, design, page copy) → this repo.
 
 ---
 
-> This repo was generated from the Nevios storefront template. It uses the
-> published `@nevios/storefront-js` + `@nevios/storefront-kit` packages.
+> Generated from the Nevios storefront template. Built on the published
+> `@nevios/storefront-js` + `@nevios/storefront-kit` packages.

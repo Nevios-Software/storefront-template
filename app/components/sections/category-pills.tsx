@@ -19,7 +19,7 @@ interface CategoryPillsProps {
 
 /**
  * Quick-link pill row — cream/peach pills with icon + label + coral arrow CTA.
- * Ported verbatim from the Bodybe Next store; only framework seams changed.
+ * Section mechanic — token-driven, no hardcoded copy.
  */
 export function CategoryPills({ pills, size = "lg", className }: CategoryPillsProps) {
   const isLg = size === "lg";
@@ -27,8 +27,9 @@ export function CategoryPills({ pills, size = "lg", className }: CategoryPillsPr
   return (
     <nav aria-label="Rychlé odkazy" className={cn(className)}>
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {/* Key by label+href — multiple pills may legitimately share a target URL. */}
         {pills.map((pill) => (
-          <li key={pill.href}>
+          <li key={pill.label + pill.href}>
             <Link
               to={pill.href}
               className={cn(
