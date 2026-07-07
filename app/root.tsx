@@ -109,13 +109,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Default storefront fonts — Satoshi + Pilcrow Rounded (Fontshare). Swap
-            the family names here + in app.css --font-satoshi/--font-pilcrow to rebrand. */}
+        {/* Default storefront font — Satoshi (Fontshare). To rebrand, swap the
+            family here + app.css --font-satoshi (and optionally point
+            --font-display-face at a second, characterful face). */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,301,400,401,500,501,700,701,900,901&f[]=pilcrow-rounded@400,500,700,900&display=swap"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,301,400,401,500,501,700,701,900,901&display=swap"
         />
         {root?.canonical ? <link rel="canonical" href={root.canonical} /> : null}
         {alternates.map((a) => (

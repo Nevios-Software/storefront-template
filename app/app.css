@@ -114,11 +114,12 @@
   --grad-peach: linear-gradient(135deg, var(--paper-peach) 0%, var(--peach-200) 100%);
 
   /* ---------------------------------------------------------------------------
-     TYPOGRAPHY — Satoshi for body, Pilcrow Rounded for display moments.
-     Both loaded via Fontshare CDN in layout.tsx <head>.
+     TYPOGRAPHY — one sans (Satoshi) for everything by default. `--font-display`
+     exists as the rebrand lever: point it at a characterful face (loaded in
+     root.tsx <head>) and every `.font-display` moment (logo, hero) switches.
      --------------------------------------------------------------------------- */
   --font-satoshi: "Satoshi", ui-sans-serif, system-ui, sans-serif;
-  --font-pilcrow: "Pilcrow Rounded", ui-sans-serif, system-ui, sans-serif;
+  --font-display-face: var(--font-satoshi);
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
   /* ---------------------------------------------------------------------------
@@ -255,7 +256,7 @@
 
   /* Fonts */
   --font-sans: var(--font-satoshi);
-  --font-display: var(--font-pilcrow);
+  --font-display: var(--font-display-face);
   --font-mono: var(--font-mono);
 
   /* Motion — both `animate-*` (for keyframe animations) and `transition`
@@ -381,9 +382,10 @@
     font-feature-settings: "tnum" on;
   }
 
-  /* Display headings use Pilcrow Rounded for brand moments */
+  /* Display moments (logo, hero) — tracks --font-display-face; the default is
+     the body sans, a rebrand points the token at a characterful face. */
   .font-display {
-    font-family: var(--font-pilcrow);
+    font-family: var(--font-display-face);
   }
 
   /* --- Section width system ------------------------------------------------
@@ -428,8 +430,8 @@
 
 /* =============================================================================
    FONT FALLBACKS
-   If Fontshare CDN fails, Satoshi/Pilcrow fall through to system fonts via the
-   stacks above. No FOIT — fonts use display: swap from the Fontshare API.
+   If Fontshare CDN fails, Satoshi falls through to system fonts via the stack
+   above. No FOIT — fonts use display: swap from the Fontshare API.
    ============================================================================= */
 
 /* =============================================================================
