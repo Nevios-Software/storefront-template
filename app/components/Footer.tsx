@@ -1,6 +1,8 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
+import { Globe } from "lucide-react";
 
 import { shop } from "../../nevios.config";
+import { useMarketData, marketHref, MARKET_COOKIE } from "../lib/market";
 
 export function Footer() {
   return (
@@ -8,11 +10,14 @@ export function Footer() {
       <div className="section-bb grid gap-10 py-14 md:grid-cols-[1.5fr_1fr_1fr]">
         <div className="max-w-xs">
           <span className="font-display text-2xl font-bold tracking-tight text-fg-on-dark">
-            {shop.name}
+            {shop.logo.full}
           </span>
           <p className="mt-3 text-sm leading-relaxed text-fg-on-dark-muted">
             Vyrobeno s péčí, doručeno rychle.
           </p>
+          <div className="mt-5">
+            <MarketPicker />
+          </div>
         </div>
 
         {/* Shop column renders only when nav items exist — an empty heading looks broken. */}
@@ -62,5 +67,45 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/**
+ * Market / language picker — lives here (not the header) to keep the chrome
+ * quiet. Cookie strategy reloads with the new market cookie; path/domain
+ * strategies navigate to the market's URL.
+ */
+function MarketPicker() {
+  const { markets, market, strategy, pathPrefix } = useMarketData();
+  const loc = useLocation();
+  if (markets.length <= 1) return null;
+
+  const onChange = (handle: string) => {
+    const m = markets.find((x) => x.handle === handle);
+    if (!m) return;
+    if (strategy === "cookie") {
+      document.cookie = `${MARKET_COOKIE}=${m.handle}; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 365}`;
+      window.location.reload();
+    } else {
+      window.location.href = marketHref(m, loc.pathname, pathPrefix);
+    }
+  };
+
+  return (
+    <label className="inline-flex items-center gap-2 rounded-pill bg-white/5 py-1.5 pr-3 pl-3 ring-1 ring-inset ring-[var(--hairline-on-dark)] transition-colors duration-base focus-within:ring-white/30 hover:bg-white/10">
+      <Globe className="size-4 text-fg-on-dark-muted" aria-hidden />
+      <span className="sr-only">Země / trh</span>
+      <select
+        value={market ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="cursor-pointer appearance-none bg-transparent text-sm font-medium text-fg-on-dark outline-none [&>option]:text-fg-1"
+      >
+        {markets.map((m) => (
+          <option key={m.handle} value={m.handle}>
+            {m.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

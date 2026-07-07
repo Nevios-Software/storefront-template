@@ -18,6 +18,8 @@ export interface MarketConfig {
 
 export const shop = {
   name: "Nevios Storefront",
+  /** Header wordmark — `short` renders on mobile, `full` from the sm breakpoint. */
+  logo: { short: "/n", full: "/nevios" },
   strategy: "cookie" as MarketStrategy,
   defaultMarket: "cs",
   markets: {
