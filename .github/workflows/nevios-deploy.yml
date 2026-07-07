@@ -29,6 +29,11 @@ concurrency:
 
 jobs:
   deploy:
+    # Runs only in a real store repo — Nevios sets the NEVIOS_STORE variable
+    # when it generates/connects the repo. The template repository itself has
+    # no vars, so the job SKIPS there instead of failing on every template
+    # update (and in a store missing its vars it skips too, pointing at setup).
+    if: ${{ vars.NEVIOS_STORE != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
