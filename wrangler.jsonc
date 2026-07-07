@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nevios-storefront",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./workers/app.ts",
+  // Publishable config — safe to ship to the browser. Override per environment;
+  // local dev reads `.dev.vars` (gitignored). The publishable key is `pk_…`.
+  "vars": {
+    "NEVIOS_API_URL": "https://api.nevios.io",
+    "NEVIOS_MARKET": "cz",
+    "NEVIOS_PUBLISHABLE_KEY": "pk_test_REPLACE_ME"
+  }
+}

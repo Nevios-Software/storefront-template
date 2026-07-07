@@ -1,0 +1,677 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* =============================================================================
+   BODYBE TOKENS — single source of truth
+   Hand-pick a color/radius/duration in a component and the design system breaks.
+   ============================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     BRAND COLOR SCALE
+     Six anchor colors from the Bodybe manual. Numbered to leave room for
+     tints/shades if we ever need them, but ramps stay shallow on purpose —
+     less surface area = less drift.
+     --------------------------------------------------------------------------- */
+  --skin-100: #efcfba;
+  --peach-200: #febe98;
+  --sunrise-300: #fb9370;
+  --coral-400: #e2564f;
+  --brown-800: #403b35;
+  --white: #ffffff;
+
+  /* ---------------------------------------------------------------------------
+     SEMANTIC ALIASES
+     Use these in components — never reach for the raw scale.
+     --------------------------------------------------------------------------- */
+  --brand: var(--coral-400); /* primary CTA, brand marks */
+  --brand-hover: #d34a44; /* coral -8% lightness, hand-tuned */
+  --brand-soft: var(--peach-200); /* secondary CTA, hover backgrounds */
+  --brand-accent: var(--sunrise-300); /* highlights, illustrative bg */
+
+  /* ---------------------------------------------------------------------------
+     SURFACES (light-only — no dark mode for v1)
+     ─────────────────────────────────────────────────────────────────────────
+     Decision tree — which background do I use?
+
+       Need pure white page bg?              → bg-page
+       Card lifted off the page (white)?     → bg-card        (alias for --card)
+       Section needing warm tint to break    → bg-paper-cream-soft  (lightest)
+       up white monotony — pick a depth:        bg-paper-cream       (deeper)
+                                                bg-paper-peach       (warm)
+                                                bg-paper-rose        (sale chips)
+       Dark feature card / footer?           → bg-paper-dark   (NOT bg-fg-1 — fg is for text)
+
+     The framed ProductCard convention:
+       outer frame = bg-paper-cream-soft, inner image well = bg-paper-cream.
+       Don't break this — DesignCard relies on the visual hierarchy.
+     --------------------------------------------------------------------------- */
+  --page: #ffffff; /* pure white — primary page background */
+  --card: var(--white); /* raised content card (semantically not "white" — it's the card surface) */
+  --paper-cream: #f8f1ea; /* warm cream — section tints, image well inside framed product card */
+  --paper-cream-soft: #fcf7f0; /* near-white cream — outer frame of framed product card, soft section bg */
+  --paper-peach: #fff3e7; /* peachy section tint — softer than peach-200, good for cross-sell rails */
+  --paper-rose: #fde9e3; /* warm rose tint — sale chips, gentle promo bg */
+  --paper-dark: var(--brown-800); /* footer, dark feature cards — warm brown soil, NOT bg-fg-1 */
+
+  /* ---------------------------------------------------------------------------
+     FOREGROUNDS — derived from brown soil for warmth.
+     --------------------------------------------------------------------------- */
+  --fg-1: #2a2622; /* primary text, headings */
+  --fg-2: #4d463e; /* body */
+  --fg-3: #807469; /* muted text, captions */
+  --fg-4: #b3a89c; /* placeholder, dividers */
+  --fg-on-dark: #faf5ec; /* text on --paper-dark */
+  --fg-on-dark-muted: #b9b0a4;
+
+  /* ---------------------------------------------------------------------------
+     HAIRLINES — use ring-* or inset box-shadow, never tailwind border-* utility.
+     --------------------------------------------------------------------------- */
+  --hairline-soft: rgba(64, 59, 53, 0.06);
+  --hairline: rgba(64, 59, 53, 0.1);
+  --hairline-strong: rgba(64, 59, 53, 0.16);
+  --hairline-on-dark: rgba(255, 255, 255, 0.1);
+
+  /* ---------------------------------------------------------------------------
+     STATE COLORS (from manual, used in toasts, badges, form validation)
+     The `-fg` variants are darkened tones for text — the base brights are too
+     light for legible text on light surfaces (warning amber on white = AA fail).
+     --------------------------------------------------------------------------- */
+  --error: #ef5350;
+  --warning: #fda627;
+  --success: #66bb6a;
+  --info: #2ab7f6;
+  --error-fg: #b71c1c; /* dark red text for "Vyprodáno"-style chips */
+  --warning-fg: #a96100; /* dark amber for "Pozastaveno"/scheduled chips */
+  --success-fg: #1f6b2c; /* dark green for "Skladem"/confirmed chips */
+  --info-fg: #0277bd; /* dark cyan for info chips */
+
+  /* ---------------------------------------------------------------------------
+     SUPPLEMENTARY (charts, category accents — never as section backgrounds)
+     --------------------------------------------------------------------------- */
+  --purple: #7e57c2;
+  --pink: #ec407a;
+  --lime: #8bc34a;
+  --yellow: #ffee58;
+  --cyan: #00ccfa;
+
+  /* ---------------------------------------------------------------------------
+     GRADIENTS — the four canonical ones from the manual.
+     --------------------------------------------------------------------------- */
+  --grad-sunset: linear-gradient(135deg, var(--coral-400) 0%, var(--sunrise-300) 100%);
+  --grad-soil: linear-gradient(135deg, var(--brown-800) 0%, var(--coral-400) 100%);
+  --grad-cream: linear-gradient(135deg, var(--white) 0%, var(--peach-200) 100%);
+  --grad-peach: linear-gradient(135deg, var(--sunrise-300) 0%, var(--peach-200) 100%);
+
+  /* ---------------------------------------------------------------------------
+     TYPOGRAPHY — Satoshi for body, Pilcrow Rounded for display moments.
+     Both loaded via Fontshare CDN in layout.tsx <head>.
+     --------------------------------------------------------------------------- */
+  --font-satoshi: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-pilcrow: "Pilcrow Rounded", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ---------------------------------------------------------------------------
+     RADII — soft & organic, matching the brand's "měkce zaoblený" language.
+     Default card is lg (16). CTAs are pill. Don't override h-* / rounded-* on
+     buttons or inputs — use variants.
+     --------------------------------------------------------------------------- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 24px;
+  --r-3xl: 32px;
+  --r-pill: 9999px;
+
+  /* ---------------------------------------------------------------------------
+     MOTION
+     --------------------------------------------------------------------------- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --duration-sheet: 480ms;
+  --ease-smooth: cubic-bezier(0.32, 0.72, 0.24, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---------------------------------------------------------------------------
+     LAYOUT — section width system
+     ---------------------------------------------------------------------------
+     4-tier mental model:
+       .section-prose   720px  — articles, forms, legal, narrow reading
+       .section-bb     1280px  — DEFAULT for content (header rows, cart, account)
+       .section-wide   1440px  — product grids, photo-heavy moments
+       .section-bleed   ∞     — edge-to-edge w/ scaling padding (header chrome,
+                                 fluid nav bars)
+
+     --section-edge scales with breakpoint so margin from viewport edges feels
+     consistent across all 4 tiers. Hero carousel + true full-bleed photos
+     intentionally sit OUTSIDE the system (handle their own peek logic).
+
+     Backwards compat: .container-bb is kept as alias for .section-bb so the
+     ~30 existing usages keep working.
+     --------------------------------------------------------------------------- */
+  --container-width: 1280px; /* legacy alias — kept for .container-bb consumers */
+  --section-edge: 1rem; /* base; overridden at sm/lg/2xl below */
+}
+
+@media (min-width: 640px)  { :root { --section-edge: 1.5rem; } }
+@media (min-width: 1024px) { :root { --section-edge: 2rem; } }
+@media (min-width: 1536px) { :root { --section-edge: 3rem; } }
+
+/* =============================================================================
+   TAILWIND THEME EXPOSURE
+   Map raw tokens to Tailwind utilities. After this, `bg-brand`, `text-fg-2`,
+   `rounded-pill`, `font-display`, `duration-slow` etc. all just work.
+   ============================================================================= */
+@theme inline {
+  /* Brand scale */
+  --color-skin: var(--skin-100);
+  --color-peach: var(--peach-200);
+  --color-sunrise: var(--sunrise-300);
+  --color-coral: var(--coral-400);
+  --color-brown: var(--brown-800);
+
+  /* Semantic */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-accent: var(--brand-accent);
+
+  /* Surfaces */
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-paper-cream: var(--paper-cream);
+  --color-paper-cream-soft: var(--paper-cream-soft);
+  --color-paper-peach: var(--paper-peach);
+  --color-paper-rose: var(--paper-rose);
+  --color-paper-dark: var(--paper-dark);
+
+  /* Foregrounds */
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-fg-4: var(--fg-4);
+  --color-fg-on-dark: var(--fg-on-dark);
+  --color-fg-on-dark-muted: var(--fg-on-dark-muted);
+
+  /* shadcn baseline aliases — make UI primitives work out of the box */
+  --color-background: var(--page);
+  --color-foreground: var(--fg-1);
+  --color-muted: var(--paper-cream);
+  --color-muted-foreground: var(--fg-3);
+  --color-border: var(--hairline);
+  --color-input: var(--hairline);
+  --color-ring: var(--coral-400);
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--white);
+  --color-secondary: var(--paper-cream);
+  --color-secondary-foreground: var(--fg-1);
+  --color-accent: var(--paper-peach);
+  --color-accent-foreground: var(--fg-1);
+  --color-destructive: var(--error);
+  --color-destructive-foreground: var(--white);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--fg-1);
+
+  /* State — base brights for fills, `-fg` darks for text on light surfaces */
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-info: var(--info);
+  --color-error-fg: var(--error-fg);
+  --color-warning-fg: var(--warning-fg);
+  --color-success-fg: var(--success-fg);
+  --color-info-fg: var(--info-fg);
+
+  /* Supplementary */
+  --color-purple: var(--purple);
+  --color-pink: var(--pink);
+  --color-lime: var(--lime);
+  --color-yellow: var(--yellow);
+  --color-cyan: var(--cyan);
+
+  /* Radii */
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-2xl: var(--r-2xl);
+  --radius-3xl: var(--r-3xl);
+  --radius-pill: var(--r-pill);
+  --radius: var(--r-lg);
+
+  /* Fonts */
+  --font-sans: var(--font-satoshi);
+  --font-display: var(--font-pilcrow);
+  --font-mono: var(--font-mono);
+
+  /* Motion — both `animate-*` (for keyframe animations) and `transition`
+     duration utilities (for transition-duration). Use the named tokens
+     instead of `duration-200/300/500` magic numbers. */
+  --animate-duration-fast: var(--duration-fast);
+  --animate-duration-base: var(--duration-base);
+  --animate-duration-slow: var(--duration-slow);
+  --animate-duration-sheet: var(--duration-sheet);
+  --ease-smooth: var(--ease-smooth);
+  --ease-spring: var(--ease-spring);
+  --ease-spring-soft: var(--ease-spring-soft);
+
+  /* Tailwind transition-duration utilities (e.g. `duration-base`) */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --duration-sheet: 480ms;
+}
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    /* Smooth scroll on anchor links (#section). */
+    scroll-behavior: smooth;
+    /* Offset so sticky-nav doesn't cover anchored headings. */
+    scroll-padding-top: 96px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    background: var(--page);
+    color: var(--fg-1);
+    font-family: var(--font-satoshi);
+    font-feature-settings:
+      "ss01" on,
+      "ss02" on,
+      "cv01" on;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Numerics use tabular figures globally inside .num + price components */
+  ::selection {
+    background: color-mix(in oklch, var(--coral-400) 25%, transparent);
+    color: var(--fg-1);
+  }
+}
+
+/* =============================================================================
+   UTILITY CLASSES — section surfaces & gradients
+   These compose color + bg + foreground in one shot so callers don't repeat
+   themselves. Pattern matches Nevios's chip-* classes.
+   ============================================================================= */
+@layer components {
+  /* --- Surface helpers ------------------------------------------------------ */
+  .surface-page {
+    background: var(--page);
+    color: var(--fg-1);
+  }
+  .surface-card {
+    background: var(--card);
+    color: var(--fg-1);
+  }
+  .surface-cream {
+    background: var(--paper-cream);
+    color: var(--fg-1);
+  }
+  .surface-peach {
+    background: var(--paper-peach);
+    color: var(--fg-1);
+  }
+  .surface-rose {
+    background: var(--paper-rose);
+    color: var(--fg-1);
+  }
+  .surface-dark {
+    background: var(--paper-dark);
+    color: var(--fg-on-dark);
+  }
+  .surface-coral {
+    background: var(--coral-400);
+    color: var(--white);
+  }
+
+  /* --- Gradient backgrounds ------------------------------------------------- */
+  .grad-sunset {
+    background: var(--grad-sunset);
+    color: var(--white);
+  }
+  .grad-soil {
+    background: var(--grad-soil);
+    color: var(--white);
+  }
+  .grad-cream {
+    background: var(--grad-cream);
+    color: var(--fg-1);
+  }
+  .grad-peach {
+    background: var(--grad-peach);
+    color: var(--fg-1);
+  }
+
+  /* --- Typography helpers --------------------------------------------------- */
+  .eyebrow {
+    font-family: var(--font-satoshi);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" on;
+  }
+
+  /* Display headings use Pilcrow Rounded for brand moments */
+  .font-display {
+    font-family: var(--font-pilcrow);
+  }
+
+  /* --- Section width system ------------------------------------------------
+     All 4 utilities share the same scaling edge padding (--section-edge).
+     Centered tiers (.section-prose / -bb / -wide) cap at their max-width;
+     .section-bleed has no cap, fills viewport with the same edge padding.
+     ------------------------------------------------------------------------- */
+  .section-prose,
+  .section-bb,
+  .section-wide,
+  .section-bleed,
+  .container-bb {
+    width: 100%;
+    padding-inline: var(--section-edge);
+  }
+
+  .section-prose { max-width: 720px;  margin-inline: auto; }
+  .section-bb    { max-width: 1280px; margin-inline: auto; }
+  .section-wide  { max-width: 1440px; margin-inline: auto; }
+  .container-bb  { max-width: 1280px; margin-inline: auto; } /* alias for back-compat */
+  /* .section-bleed: w-full with padding only — no max-width, no auto-center */
+
+  /* --- Animated gradient (CategoryBanners) ---------------------------------
+     Slow drift of color stops — used on banner cards when no photo is set yet.
+     ------------------------------------------------------------------------- */
+  .bg-grad-animate {
+    background-size: 200% 200%;
+    animation: gradient-shift 10s ease-in-out infinite;
+  }
+
+  /* --- Hairline ring helpers ------------------------------------------------ */
+  .ring-hairline {
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .ring-hairline-soft {
+    box-shadow: inset 0 0 0 1px var(--hairline-soft);
+  }
+  .ring-hairline-strong {
+    box-shadow: inset 0 0 0 1px var(--hairline-strong);
+  }
+}
+
+/* =============================================================================
+   FONT FALLBACKS
+   If Fontshare CDN fails, Satoshi/Pilcrow fall through to system fonts via the
+   stacks above. No FOIT — fonts use display: swap from the Fontshare API.
+   ============================================================================= */
+
+/* =============================================================================
+   ANIMATIONS — skeleton shimmer, indeterminate progress
+   ============================================================================= */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.animate-shimmer {
+  animation: shimmer 1.8s linear infinite;
+}
+
+/* Seamless marquee — posouvá track o polovinu (track = 2× duplikovaný obsah). */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-x var(--marquee-dur, 60s) linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes indeterminate {
+  0% { left: -33%; }
+  100% { left: 100%; }
+}
+.animate-indeterminate {
+  animation: indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes toast-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-toast-in {
+  animation: toast-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* =============================================================================
+   POLISH UTILITIES — Slack-tier micro-interactions
+   ============================================================================= */
+
+/* Hover lift — used on product cards, collection cards, refill cards.
+   Subtle translate + shadow + smooth transition. */
+.lift-hover {
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lift-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px -2px rgba(64, 59, 53, 0.08),
+    0 2px 6px -1px rgba(64, 59, 53, 0.04);
+}
+
+/* Card with built-in lift — combines hairline + lift */
+.card-lift {
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px var(--hairline-strong),
+    0 8px 24px -8px rgba(64, 59, 53, 0.12),
+    0 2px 6px -1px rgba(64, 59, 53, 0.06);
+}
+
+/* Glow on coral CTAs on hover */
+.glow-coral {
+  transition:
+    box-shadow 220ms ease,
+    transform 120ms ease;
+}
+.glow-coral:hover {
+  box-shadow: 0 8px 24px -6px rgba(226, 86, 79, 0.45);
+}
+
+/* Smooth content fade — for variant swaps, route transitions */
+@keyframes content-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: content-fade 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Gradient drift — used by .bg-grad-animate on CategoryBanner cards */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Number ticker — for points, savings, counters that animate */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.count-up {
+  animation: count-up 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ---------------------------------------------------------------------------
+   PRAVIDLO: Měnící se čísla se animují, nemění se staticky.
+   Každé živě se měnící číslo (počet v košíku, množství, mezisoučet, sklad)
+   při změně VKLOUZNE — nová hodnota se přisune zdola, ne skok. Použij přes
+   <AnimatedNum> (components/shared/animated-num.tsx), který re-keyuje span
+   touto třídou. Honoruje prefers-reduced-motion.
+   --------------------------------------------------------------------------- */
+@keyframes num-roll-in {
+  from { opacity: 0; transform: translateY(0.7em); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.num-roll {
+  display: inline-block;
+  animation: num-roll-in var(--duration-base) var(--ease-spring-soft) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .num-roll { animation: none; }
+}
+
+/* Pulse-soft — gentler than animate-pulse */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+.pulse-soft {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
+
+/* Coral underline — emphasis text */
+.coral-underline {
+  background-image: linear-gradient(180deg, transparent 60%, rgba(226, 86, 79, 0.25) 60%);
+}
+
+/* Tabular figures — combines with .num */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Image well — consistent paper-cream background with rounded corners */
+.image-well {
+  background-color: var(--paper-cream);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Skeleton shimmer (alternative — coral subtle) */
+@keyframes shimmer-coral {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-coral {
+  background: linear-gradient(
+    90deg,
+    var(--paper-cream-soft) 0%,
+    rgba(254, 190, 152, 0.3) 50%,
+    var(--paper-cream-soft) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-coral 1.6s linear infinite;
+}
+
+/* Scroll-snap utilities */
+.snap-row {
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 24px;
+}
+.snap-row > * {
+  scroll-snap-align: start;
+}
+
+/* =============================================================================
+   APPLE-TIER POLISH — card stack hover, view transitions
+   ============================================================================= */
+
+/* Card stack — when hovering any card-stack child, neighbors tuck back & scale down.
+   Each direct child must carry data-stack="card". */
+.card-stack [data-stack="card"] {
+  transition:
+    transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+.card-stack:hover [data-stack="card"] {
+  opacity: 0.72;
+  transform: scale(0.97);
+  filter: saturate(0.85);
+}
+.card-stack:hover [data-stack="card"]:hover {
+  opacity: 1;
+  transform: scale(1.02) translateY(-2px);
+  filter: saturate(1);
+  z-index: 1;
+}
+
+/* View transitions (Chromium) — smoother page changes when the browser supports it. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+/* Cursor-follow image — used by <CursorFollowImage>. Provides the perspective wrapper. */
+.tilt-3d {
+  transform-style: preserve-3d;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduce motion — respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .lift-hover,
+  .card-lift,
+  .glow-coral,
+  .fade-in,
+  .count-up,
+  .pulse-soft,
+  .animate-shimmer,
+  .animate-indeterminate,
+  .animate-toast-in,
+  .shimmer-coral,
+  .card-stack [data-stack="card"],
+  .tilt-3d {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}

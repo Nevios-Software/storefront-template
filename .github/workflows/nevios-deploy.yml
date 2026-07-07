@@ -1,0 +1,50 @@
+# Deploy this store to Nevios on every push to main.
+#
+# The build runs here on GitHub's free CI compute; `nevios push` then ships the
+# built React app to Nevios hosting (Cloudflare Workers-for-Platforms). Nevios
+# never builds — it only receives the built isolate + assets.
+#
+# Required repo settings (Settings → Secrets and variables → Actions):
+#   Secret    NEVIOS_PAT       — deploy token (generate it in the Nevios dashboard)
+#   Variable  NEVIOS_API_URL   — e.g. https://c.nevios.io
+#   Variable  NEVIOS_ACCOUNT   — your account handle
+#   Variable  NEVIOS_STORE     — your store (storefront) handle
+name: Deploy to Nevios
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# One deploy at a time per branch; a newer push cancels an in-flight one.
+concurrency:
+  group: nevios-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --no-frozen-lockfile
+
+      # Build the React Router app → build/server (isolate) + build/client (assets).
+      # If the build fails, the job stops here and the LIVE store is never touched.
+      - run: pnpm build
+
+      - name: Deploy to Nevios
+        env:
+          NEVIOS_PAT: ${{ secrets.NEVIOS_PAT }}
+          NEVIOS_API_URL: ${{ vars.NEVIOS_API_URL }}
+          NEVIOS_ACCOUNT: ${{ vars.NEVIOS_ACCOUNT }}
+          NEVIOS_STORE: ${{ vars.NEVIOS_STORE }}
+          NEVIOS_TRIGGERED_BY: github-action
+        run: npx @nevios/cli push --dir ./build/server
