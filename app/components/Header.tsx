@@ -1,7 +1,9 @@
 import * as React from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useCart, useAccount, useT } from "@nevios/storefront-kit";
+
+import { cn } from "~/lib/utils";
 
 import { shop } from "../../nevios.config";
 import { MenuDrawer } from "./layout/menu-drawer";
@@ -46,21 +48,12 @@ export function Header() {
           </Link>
         </div>
 
+        {/* Desktop nav — driven by `shop.menu` in nevios.config.ts (one list,
+            rendered here AND in the mobile menu drawer). Active link gets a
+            brand underline. */}
         <nav className="hidden items-center gap-7 md:flex">
-          <Link
-            to="/collections"
-            className="text-sm font-medium text-fg-2 transition-colors duration-base hover:text-fg-1"
-          >
-            Kolekce
-          </Link>
-          {shop.nav.map((item) => (
-            <Link
-              key={item.handle}
-              to={`/collections/${item.handle}`}
-              className="text-sm font-medium text-fg-2 transition-colors duration-base hover:text-fg-1"
-            >
-              {item.label}
-            </Link>
+          {shop.menu.map((item) => (
+            <NavLink key={item.href + item.label} href={item.href} label={item.label} />
           ))}
         </nav>
 
@@ -105,5 +98,26 @@ export function Header() {
       <SearchDrawer open={searchOpen} onClose={() => setSearchOpen(false)} />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
+  );
+}
+
+/** Top-nav link with an animated brand underline on the active route. */
+function NavLink({ href, label }: { href: string; label: string }) {
+  const { pathname } = useLocation();
+  const active = pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
+  return (
+    <Link
+      to={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "relative py-1 text-sm font-medium transition-colors duration-base",
+        active ? "text-fg-1" : "text-fg-2 hover:text-fg-1",
+        // underline: scales in on active/hover (animated via transform)
+        "after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-brand after:transition-transform after:duration-base hover:after:scale-x-100",
+        active && "after:scale-x-100",
+      )}
+    >
+      {label}
+    </Link>
   );
 }

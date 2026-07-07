@@ -20,6 +20,15 @@ export const shop = {
   name: "Nevios Storefront",
   /** Header wordmark — `short` renders on mobile, `full` from the sm breakpoint. */
   logo: { short: "/n", full: "/nevios" },
+  /** Top navigation — rendered in the desktop header AND the mobile menu
+   *  drawer. Edit here, shows everywhere. Any route works (collections,
+   *  content pages, /search…). */
+  menu: [
+    { label: "Kolekce", href: "/collections" },
+    { label: "O nás", href: "/o-nas" },
+    { label: "Doprava a platba", href: "/doprava" },
+    { label: "Kontakt", href: "/kontakt" },
+  ] as { label: string; href: string }[],
   strategy: "cookie" as MarketStrategy,
   defaultMarket: "cs",
   markets: {

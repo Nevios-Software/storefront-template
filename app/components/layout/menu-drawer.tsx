@@ -1,5 +1,15 @@
 import { Link } from "react-router";
-import { ArrowRight, LayoutGrid, Package, Truck, User } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Info,
+  LayoutGrid,
+  Mail,
+  Search,
+  Truck,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 
 import { shop } from "../../../nevios.config";
 import {
@@ -9,9 +19,20 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 
+/** Icon per menu href — falls back to a generic page icon for custom routes. */
+function iconFor(href: string): LucideIcon {
+  if (href.startsWith("/collections")) return LayoutGrid;
+  if (href.startsWith("/doprava")) return Truck;
+  if (href.startsWith("/kontakt")) return Mail;
+  if (href.startsWith("/o-nas")) return Info;
+  if (href.startsWith("/search")) return Search;
+  return FileText;
+}
+
 /**
  * Mobile navigation drawer — slides in from the left (Sheet's built-in
- * animation). Controlled by the Header; every link closes it on navigate.
+ * animation). Items come from `shop.menu` in nevios.config.ts (the same list
+ * the desktop header renders) + the account link. Every link closes it.
  */
 export function MenuDrawer({
   open,
@@ -31,41 +52,24 @@ export function MenuDrawer({
           </SheetTitle>
         </SheetHeader>
         <nav aria-label="Hlavní menu" className="flex flex-col gap-1 px-2">
-          <Link to="/collections" onClick={onClose} className={item}>
-            <span className="flex items-center gap-3">
-              <LayoutGrid className="size-5 text-fg-3" /> Kolekce
-            </span>
-            <ArrowRight className="size-4 text-fg-4" />
-          </Link>
-          {shop.nav.map((n) => (
-            <Link key={n.handle} to={`/collections/${n.handle}`} onClick={onClose} className={item}>
-              <span className="flex items-center gap-3">
-                <Package className="size-5 text-fg-3" /> {n.label}
-              </span>
-              <ArrowRight className="size-4 text-fg-4" />
-            </Link>
-          ))}
+          {shop.menu.map((n) => {
+            const Icon = iconFor(n.href);
+            return (
+              <Link key={n.href + n.label} to={n.href} onClick={onClose} className={item}>
+                <span className="flex items-center gap-3">
+                  <Icon className="size-5 text-fg-3" /> {n.label}
+                </span>
+                <ArrowRight className="size-4 text-fg-4" />
+              </Link>
+            );
+          })}
+          <div className="mx-3 my-2 h-px bg-[var(--hairline-soft)]" aria-hidden />
           <Link to="/account" onClick={onClose} className={item}>
             <span className="flex items-center gap-3">
               <User className="size-5 text-fg-3" /> Můj účet
             </span>
             <ArrowRight className="size-4 text-fg-4" />
           </Link>
-          <div className="mx-3 my-2 h-px bg-[var(--hairline-soft)]" aria-hidden />
-          {[
-            { to: "/o-nas", label: "O nás" },
-            { to: "/doprava", label: "Doprava a platba", icon: Truck },
-            { to: "/kontakt", label: "Kontakt" },
-          ].map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              onClick={onClose}
-              className="rounded-xl px-3 py-2.5 text-sm font-medium text-fg-2 transition-colors duration-base hover:bg-paper-cream-soft hover:text-fg-1"
-            >
-              {l.label}
-            </Link>
-          ))}
         </nav>
       </SheetContent>
     </Sheet>

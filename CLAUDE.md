@@ -95,8 +95,11 @@ Skip a step and the component doesn't exist as far as the design system knows.
   `ContentPage` shell (copy `o-nas.tsx`). It auto-registers into the Nevios
   route registry via `nevios routes sync` on deploy (feeds sitemap + dashboard
   page list); add a `"/your-path": { "title": "…" }` entry in
-  `nevios.routes.json` for a proper title/SEO metadata. Link it from
-  `Footer.tsx`/`Header.tsx` if it should be reachable.
+  `nevios.routes.json` for a proper title/SEO metadata. To make it reachable,
+  add it to the top menu (below) or the Footer's info column.
+- **Edit the top menu** → `shop.menu` in `nevios.config.ts` — ONE list of
+  `{ label, href }`, rendered by both the desktop header nav and the mobile
+  menu drawer. Never hardcode nav links in `Header.tsx`/`menu-drawer.tsx`.
 - **Add a shadcn primitive** → `pnpm dlx shadcn@latest add <name>` (config in
   `components.json`; lands in `app/components/ui/`). It's covered by the
   `/design/primitives/overview` specimen — extend that page if it's a primitive
