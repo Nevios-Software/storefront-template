@@ -2,6 +2,7 @@
   "name": "nevios-storefront-starter",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@9.13.2",
   "type": "module",
   "description": "Nevios headless storefront starter — React Router 7 on Cloudflare, wired to @nevios/storefront-kit.",
   "scripts": {
