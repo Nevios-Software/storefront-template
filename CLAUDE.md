@@ -143,6 +143,16 @@ Skip a step and the component doesn't exist as far as the design system knows.
 - Secrets: `.env*`, `.dev.vars`, tokens. Never read into a commit, never print.
 - `package.json` dependencies — don't add or bump packages.
 
+## Skills (owner shortcuts)
+
+- **`/develop`** — starts the local live preview and orients the owner on how to
+  work on the site. The *working* mode; never publishes.
+- **`/deploy`** — runs the safety gate (`typecheck && build`) and, only if green,
+  commits + pushes to `main` to publish live. The *publish* step.
+- **`/exploration <target> <what to vary> [N]`** — builds a throwaway
+  `/design/exploration` page with N side-by-side variants of one component
+  (default 5) to compare and pick; applies the winner and deletes the page.
+
 ## Run / verify / deploy
 
 - **Dev**: `pnpm dev` → http://localhost:3030 (and `/design` for the registry).
