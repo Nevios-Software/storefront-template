@@ -111,16 +111,44 @@ Skip a step and the component doesn't exist as far as the design system knows.
 - **Add a product-page element** (size guide, delivery estimate, …) → build
   under `app/components/product/`, register it in `registry.ts`, and compose
   into `app/routes/products.$handle.tsx`.
-- **Add an alternate page template** (a different PDP/collection layout the
-  merchant assigns per product/collection, like Shopify's `product.bundle`) →
-  build a component under `app/product-templates/` (or `app/collection-templates/`)
-  taking the same props as `default.tsx`, register it in that folder's
-  `registry.ts` (key = its handle), and declare it in `nevios.templates.json`
-  (`product`/`collection` → `{ "<handle>": { "label": "…" } }`). On deploy,
-  `nevios templates sync` publishes it to the dashboard's **"Template ▾"** picker;
-  the merchant assigns it per product/collection and `products.$handle.tsx` /
-  `collections.$handle.tsx` dispatch to it via `template_handle`. `default` is
-  implicit — never list it.
+
+## Page templates (product & collection)
+
+A product/collection can render an **alternate page template** the merchant
+assigns in the dashboard ("Template ▾", Shopify's `templateSuffix`). Templates
+are **code** (`app/product-templates/` · `app/collection-templates/`): a
+`registry.ts` maps a handle → component, and `products.$handle.tsx` /
+`collections.$handle.tsx` dispatch on `template_handle` (`null`/unknown →
+`default`). The current PDP/collection body IS `default.tsx`.
+
+**The decision — condition `default` vs. make a new template.** Default to
+conditioning; a template earns its existence. Judge by **how different the page
+is**, not how different the product is:
+
+- **Condition inside `default.tsx`** when the page STRUCTURE is unchanged and the
+  difference is data-driven — you can phrase it as *"for products where X, also
+  show / hide / swap Y."* Drive it off a product field (`tags`, a metafield,
+  `product_type`, `vendor`): a badge, a note, an extra section, a different CTA.
+  ```tsx
+  {product.tags.includes("supplement") && <DosageTable product={product} />}
+  {product.product_type === "bundle" && <BundleContents product={product} />}
+  ```
+  Every matching product gets it automatically — one file, no dashboard step.
+- **Make a new template** — build a component under `app/product-templates/`
+  (or `app/collection-templates/`) taking the same props as `default.tsx`,
+  register it in that folder's `registry.ts` (key = its handle), and declare it
+  in `nevios.templates.json` (`product`/`collection` →
+  `{ "<handle>": { "label": "…" } }`). Do this when the LAYOUT itself diverges
+  **and** it applies to a merchant-chosen subset that *isn't* derivable from a
+  field: a different section composition, a landing-page-style PDP, a bundle
+  "what's inside" hero, a subscription/quiz flow. `nevios templates sync`
+  publishes it to the dashboard's **"Template ▾"** picker.
+
+**Rule of thumb:** start in `default` with a condition. Promote to a template
+only when the branches start fighting each other or the structure truly changes
+— *"this class of product needs a different page,"* not *"this product shows one
+extra line."* Fewer templates = less drift. `default` is implicit — never list
+it in `nevios.templates.json`.
 
 ## Rules (hard)
 
