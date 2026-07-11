@@ -1,0 +1,6 @@
+{
+  "$comment": "Alternate page templates this store ships. Published to the dashboard 'Template ▾' (per product/collection) on deploy via `nevios templates sync`. The `default` template is implicit — list ONLY alternates here. Each key is a template handle registered in app/product-templates/registry.ts or app/collection-templates/registry.ts.",
+  "source": "storefront",
+  "product": {},
+  "collection": {}
+}

@@ -72,3 +72,14 @@ jobs:
           NEVIOS_ACCOUNT: ${{ vars.NEVIOS_ACCOUNT }}
           NEVIOS_STORE: ${{ vars.NEVIOS_STORE }}
         run: npx @nevios/cli routes sync
+
+      # Publishes the store's alternate page templates (nevios.templates.json) to
+      # the dashboard "Template ▾" picker — same deploy-token credential.
+      - name: Sync templates to Nevios
+        continue-on-error: true
+        env:
+          NEVIOS_PAT: ${{ secrets.NEVIOS_PAT }}
+          NEVIOS_API_URL: ${{ vars.NEVIOS_API_URL }}
+          NEVIOS_ACCOUNT: ${{ vars.NEVIOS_ACCOUNT }}
+          NEVIOS_STORE: ${{ vars.NEVIOS_STORE }}
+        run: npx @nevios/cli templates sync

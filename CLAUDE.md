@@ -111,6 +111,16 @@ Skip a step and the component doesn't exist as far as the design system knows.
 - **Add a product-page element** (size guide, delivery estimate, …) → build
   under `app/components/product/`, register it in `registry.ts`, and compose
   into `app/routes/products.$handle.tsx`.
+- **Add an alternate page template** (a different PDP/collection layout the
+  merchant assigns per product/collection, like Shopify's `product.bundle`) →
+  build a component under `app/product-templates/` (or `app/collection-templates/`)
+  taking the same props as `default.tsx`, register it in that folder's
+  `registry.ts` (key = its handle), and declare it in `nevios.templates.json`
+  (`product`/`collection` → `{ "<handle>": { "label": "…" } }`). On deploy,
+  `nevios templates sync` publishes it to the dashboard's **"Template ▾"** picker;
+  the merchant assigns it per product/collection and `products.$handle.tsx` /
+  `collections.$handle.tsx` dispatch to it via `template_handle`. `default` is
+  implicit — never list it.
 
 ## Rules (hard)
 
