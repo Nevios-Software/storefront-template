@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
   useRouteLoaderData,
   useRouteError,
+  useLocation,
   isRouteErrorResponse,
 } from "react-router";
 import {
@@ -143,6 +144,11 @@ export default function App({ loaderData }: Route.ComponentProps) {
     [loaderData.config],
   );
 
+  // The /design registry is an internal tool page — it owns the full viewport
+  // (its own canvas + floating sidebar), so the storefront chrome is skipped.
+  const { pathname } = useLocation();
+  const bare = pathname === "/design" || pathname.startsWith("/design/");
+
   return (
     <ThemeProvider theme={loaderData.theme}>
       <I18nProvider locale={loaderData.locale}>
@@ -150,13 +156,17 @@ export default function App({ loaderData }: Route.ComponentProps) {
           <AccountProvider>
             <CartProvider>
               {loaderData.preview ? <PreviewBanner /> : null}
-              <div className="flex min-h-dvh flex-col">
-                <Header />
-                <main className="flex-1">
-                  <Outlet />
-                </main>
-                <Footer />
-              </div>
+              {bare ? (
+                <Outlet />
+              ) : (
+                <div className="flex min-h-dvh flex-col">
+                  <Header />
+                  <main className="flex-1">
+                    <Outlet />
+                  </main>
+                  <Footer />
+                </div>
+              )}
             </CartProvider>
           </AccountProvider>
         </NeviosProvider>

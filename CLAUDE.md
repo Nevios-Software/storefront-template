@@ -31,7 +31,7 @@ so. "Add a testimonials section" / "make the hero say Y" → code, do it here.
 app/root.tsx                     <html> shell, kit providers, fonts, Header/Footer mount
 app/app.css                      ALL design tokens — THE rebrand lever
 app/design/registry.ts           the /design registry (single source of truth)
-app/design/design-shell.tsx      DesignShell, Specimen, PropsTable, RuleBox
+app/design/section-demos.tsx     live section demos (keyed by slug) for /design
 app/components/
   Header.tsx / Footer.tsx        site chrome
   sections/                      hero-carousel, product-rail, category-pills, usp-bar,
@@ -48,7 +48,7 @@ app/routes/
   order.$token.tsx               public order-status page (token = auth)
   o-nas / doprava / kontakt / obchodni-podminky   content pages (ContentPage shell)
   sitemap[.]xml.tsx · robots[.]txt.tsx            SEO resource routes
-  design.*.tsx                   live specimen pages for the registry
+  design._index.tsx              the single /design registry page (live showcase)
 app/lib/                         SDK wiring, market resolution, adapters (mostly off-limits)
 nevios.config.ts                 store name, markets, kit theme fallback
 nevios.routes.json               route-sync manifest (titles/SEO for content pages)
@@ -62,12 +62,16 @@ generated from `app/design/registry.ts`, never from a markdown list. **Before
 building any UI, check `/design` and `registry.ts` for an existing section or
 primitive that already does it.** Reuse beats rebuilding, always.
 
+Everything lives on **one page** — `app/routes/design._index.tsx`. There are
+**no per-component specimen routes**; sections render live inline via
+`app/design/section-demos.tsx` (keyed by slug).
+
 Definition of done for a NEW component/section:
 1. Build it under the right folder: `components/{sections,product,shared,ui}/`.
 2. Add an entry to `app/design/registry.ts` (group + slug + title + description).
-3. Add a specimen route `app/routes/design.<group>.<slug>.tsx` — copy an
-   existing one (`design.sections.usp-bar.tsx` is a good model): `DesignShell` +
-   `Specimen` with real demo props + `PropsTable`.
+3. For a **section**: add a live demo to `app/design/section-demos.tsx` (keyed
+   by slug) so it shows up in the Sections group. For a **foundation/primitive**:
+   add a `ShowcaseCard` block to the Foundation column in `design._index.tsx`.
 4. `pnpm typecheck` passes.
 
 Skip a step and the component doesn't exist as far as the design system knows.
@@ -89,7 +93,7 @@ Skip a step and the component doesn't exist as far as the design system knows.
   account / order surfaces read the config theme, so keep the two visually in
   sync. Never restyle components one by one.
 - **Change the product card look** → `app/components/product/vertical-card.tsx`
-  (specimen: `/design/product/vertical-card`). Keep the framed convention:
+  (shown live in the `/design` Cards section). Keep the framed convention:
   outer frame `bg-paper-cream-soft`, image well `bg-paper-cream`.
 - **Add a content page** → new route file under `app/routes/` using the
   `ContentPage` shell (copy `o-nas.tsx`). It auto-registers into the Nevios
@@ -101,13 +105,12 @@ Skip a step and the component doesn't exist as far as the design system knows.
   `{ label, href }`, rendered by both the desktop header nav and the mobile
   menu drawer. Never hardcode nav links in `Header.tsx`/`menu-drawer.tsx`.
 - **Add a shadcn primitive** → `pnpm dlx shadcn@latest add <name>` (config in
-  `components.json`; lands in `app/components/ui/`). It's covered by the
-  `/design/primitives/overview` specimen — extend that page if it's a primitive
-  shoppers will see.
+  `components.json`; lands in `app/components/ui/`). Surface it in the `/design`
+  Foundation column (a `ShowcaseCard` in `design._index.tsx`) if it's a
+  primitive shoppers will see.
 - **Add a product-page element** (size guide, delivery estimate, …) → build
-  under `app/components/product/`, register + add it to the
-  `design.product.pdp-elements.tsx` specimen, compose into
-  `app/routes/products.$handle.tsx`.
+  under `app/components/product/`, register it in `registry.ts`, and compose
+  into `app/routes/products.$handle.tsx`.
 
 ## Rules (hard)
 

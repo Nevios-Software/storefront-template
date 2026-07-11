@@ -1,14 +1,15 @@
 /**
  * The `/design` registry — the single source of truth for what's registered
  * in this store's design system. Never list components in a markdown doc
- * (it drifts); add an entry here + a specimen route and it shows up live.
+ * (it drifts); add an entry here + a live demo and it shows up on `/design`.
  *
- * Adding a new section/primitive? Definition of done:
+ * Everything lives on ONE page (`app/routes/design._index.tsx`) — there are no
+ * per-component specimen routes. Adding a new section? Definition of done:
  *   1. Build it under components/{sections,product,ui}/.
  *   2. Add one entry below.
- *   3. Add a specimen route `app/routes/design.<group>.<slug>.tsx` that
- *      renders it with real demo props (copy the pattern from an existing one).
- *   4. `pnpm typecheck` — the registry + routes are typed to stay in sync.
+ *   3. Add a live demo to `app/design/section-demos.tsx` (keyed by slug) so it
+ *      renders inline in the Sections group on `/design`.
+ *   4. `pnpm typecheck`.
  */
 
 export type DesignGroup = "sections" | "product" | "shared" | "primitives";
@@ -103,8 +104,4 @@ export const registry: DesignEntry[] = [
 
 export function registryByGroup(group: DesignGroup): DesignEntry[] {
   return registry.filter((e) => e.group === group);
-}
-
-export function designPath(entry: Pick<DesignEntry, "group" | "slug">): string {
-  return `/design/${entry.group}/${entry.slug}`;
 }
